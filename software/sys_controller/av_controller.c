@@ -107,7 +107,7 @@ void init_adv() {
     adv7513_writereg(0xE0, 0xD0);
     adv7513_writereg(0xF9, 0x00);
 
-    adv7513_writereg(0x15, 0x20);
+    adv7513_writereg(0x15, 0xA0);
     adv7513_writereg(0x16, 0x00);
 
     adv7513_writereg(0xAF, 0x06);
@@ -115,7 +115,7 @@ void init_adv() {
     adv7513_writereg(0xBA, 0x60);
 
     adv7513_writereg(0x01, 0x00);
-    adv7513_writereg(0x02, 0x18);
+    adv7513_writereg(0x02, 0x30);
     adv7513_writereg(0x03, 0x00);
     adv7513_writereg(0x0A, 0x00);
     adv7513_writereg(0x0C, 0x84);
@@ -223,15 +223,13 @@ int main()
         }
 
 #ifdef DEBUG
-        /*ncts = 0;
-        Switch_HDMITX_Bank(1);
-        //rd = read_it2(0xc5);
-        //printf("osclock: 0x%x\n", rd);
-        ncts |= read_it2(0x35) >> 4;
-        ncts |= read_it2(0x36) << 4;
-        ncts |= read_it2(0x37) << 12;
-        printf("NCTS: %u\n", ncts);
-        printf("btnvec: 0x%x\n", btn_vec);*/
+        ncts = 0;
+        ncts |= (adv7513_readreg(0x04) & 0xf) << 16;
+        ncts |= adv7513_readreg(0x05) << 8;
+        ncts |= adv7513_readreg(0x06);
+        printf("NCTS: %lu\n", ncts);
+
+        //printf("btnvec: 0x%x\n", btn_vec);
 
         /*rd = adv7513_readreg(0x9e);
         printf("ADV7513 PLL status(0x%x)\n", rd);*/

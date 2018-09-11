@@ -34,7 +34,7 @@
 
 `define EXT_H_AVIDSTART         144
 
-`define CPS2_H_AVIDSTART        97
+`define CPS2_H_AVIDSTART        120
 `define CPS2_H_ACTIVE           384
 
 `define NUM_LINE_BUFFERS        40
@@ -43,10 +43,9 @@ module scanconverter (
     input PCLK_in,
     input PCLK_ext,
     input reset_n,
-    input [3:0] R_in,
-    input [3:0] G_in,
-    input [3:0] B_in,
-    input [3:0] F_in,
+    input [4:0] R_in,
+    input [4:0] G_in,
+    input [4:0] B_in,
     input HSYNC_in,
     input VSYNC_in,
     input [10:0] hcnt_ext,
@@ -73,9 +72,9 @@ wire pclk_1x;
 wire linebuf_rdclock;
 
 //RGB signals&registers: 4 bits per component + 4 bit fade
-wire [3:0] R_act, G_act, B_act, F_act;
-wire [3:0] R_lbuf, G_lbuf, B_lbuf, F_lbuf;
-reg [3:0] R_in_L, G_in_L, B_in_L, F_in_L;
+wire [4:0] R_act, G_act, B_act;
+wire [4:0] R_lbuf, G_lbuf, B_lbuf;
+reg [4:0] R_in_L, G_in_L, B_in_L;
 reg [7:0] R_pp1, G_pp1, B_pp1, R_pp2, G_pp2, B_pp2, R_pp3, G_pp3, B_pp3, R_pp4, G_pp4, B_pp4;
 
 //H+V syncs + data enable signals&registers
@@ -88,7 +87,6 @@ reg DE_pp2, DE_pp3, DE_pp4;
 reg frame_change, line_change;
 
 //H+V counters
-wire [11:0] linebuf_hoffset; //Offset for line (max. 2047 pixels), MSB indicates which line is read/written
 reg [11:0] hcnt_1x;
 reg [10:0] vcnt_1x;
 
@@ -141,17 +139,6 @@ function [7:0] apply_mask;
     end
     endfunction
 
-//Fade
-function [7:0] apply_fade;
-    input [3:0] data;
-    input [3:0] fade;
-    begin
-        //apply_fade = {data, data} >> (3'h7-fade[3:1]);
-        apply_fade = {4'h0, data} * ({4'h0, fade} + 8'h2);
-    end
-    endfunction
-
-
 //Mux for active data selection
 //
 //Non-critical signals and inactive clock combinations filtered out in SDC
@@ -159,27 +146,25 @@ always @(*) begin
         R_act = R_lbuf;
         G_act = G_lbuf;
         B_act = B_lbuf;
-        F_act = F_lbuf;
         HSYNC_act = HSYNC_ext;
         VSYNC_act = VSYNC_ext;
         DE_act = DE_ext;
-        linebuf_hoffset = ((6*{2'b00, hcnt_ext})/5)-((6*`EXT_H_AVIDSTART)/5);
         line_id_act = vctr_ext;
         col_id_act = hctr_ext;
 end
 
-//wire [9:0] linebuf_rdaddr = (linebuf_hoffset-H_AVIDSTART-96)>>1;
-wire [9:0] linebuf_rdaddr = linebuf_hoffset>>1;
-wire [9:0] linebuf_wraddr = (hcnt_1x>>1)-`CPS2_H_AVIDSTART;
+wire [9:0] linebuf_wraddr = hcnt_1x-`CPS2_H_AVIDSTART;
+
+wire q_unconn;
 
 linebuf linebuf_rgb (
-    .data ( {R_in_L, G_in_L, B_in_L, F_in_L} ),
+    .data ( {1'b0, R_in_L, G_in_L, B_in_L} ),
     .rdaddress ( {vcnt_ext_lbuf, hcnt_ext_lbuf} ),
     .rdclock ( PCLK_out ),
     .wraddress( {line_idx, linebuf_wraddr[8:0]} ),
     .wrclock ( PCLK_in ),
     .wren ( linebuf_wraddr < `CPS2_H_ACTIVE ),
-    .q ( {R_lbuf, G_lbuf, B_lbuf, F_lbuf} )
+    .q ( {q_unconn, R_lbuf, G_lbuf, B_lbuf} )
 );
 
 //Postprocess pipeline
@@ -199,9 +184,9 @@ begin
     col_id_pp2 <= col_id_pp1;
     mask_enable_pp2 <= mask_enable_pp1;
     
-    R_pp3 <= apply_fade(R_act, F_act);
-    G_pp3 <= apply_fade(G_act, F_act);
-    B_pp3 <= apply_fade(B_act, F_act);
+    R_pp3 <= {R_act, 3'b000};
+    G_pp3 <= {G_act, 3'b000};
+    B_pp3 <= {B_act, 3'b000};
     HSYNC_pp3 <= HSYNC_pp2;
     VSYNC_pp3 <= VSYNC_pp2;
     DE_pp3 <= DE_pp2;
@@ -266,7 +251,6 @@ begin
         R_in_L <= R_in;
         G_in_L <= G_in;
         B_in_L <= B_in;
-        F_in_L <= F_in;
         HSYNC_in_L <= HSYNC_in;
         VSYNC_in_L <= VSYNC_in;
     end
