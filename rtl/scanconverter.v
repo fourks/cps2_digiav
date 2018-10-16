@@ -56,6 +56,7 @@ module scanconverter (
     input HSYNC_ext,
     input VSYNC_ext,
     input DE_ext,
+    input mask_enable_ext,
     input [31:0] x_info,
     output PCLK_out,
     output reg [7:0] R_out,
@@ -101,7 +102,7 @@ reg [1:0] line_out_idx_2x, line_out_idx_3x, line_out_idx_4x;
 reg [2:0] line_out_idx_5x;
 reg [10:0] vmax;
 reg [23:0] warn_h_unstable, warn_pll_lock_lost, warn_pll_lock_lost_3x;
-reg mask_enable_pp1, mask_enable_pp2, mask_enable_pp3, mask_enable_pp4;
+reg mask_enable_pp2, mask_enable_pp3, mask_enable_pp4;
 
 reg [1:0] V_SCANLINEMODE;
 reg [4:0] V_SCANLINEID;
@@ -178,14 +179,13 @@ always @(posedge PCLK_out)
 begin
     line_id_pp1 <= line_id_act;
     col_id_pp1 <= col_id_act;
-    mask_enable_pp1 <= 0;
 
     HSYNC_pp2 <= HSYNC_act;
     VSYNC_pp2 <= VSYNC_act;
     DE_pp2 <= DE_act;
     line_id_pp2 <= line_id_pp1;
     col_id_pp2 <= col_id_pp1;
-    mask_enable_pp2 <= mask_enable_pp1;
+    mask_enable_pp2 <= mask_enable_ext;
     
     R_pp3 <= {R_act, 3'b000};
     G_pp3 <= {G_act, 3'b000};
@@ -247,7 +247,7 @@ begin
             end else begin
                 vcnt_1x <= vcnt_1x + 1'b1;
                 
-                if ((vcnt_1x == 24) || (line_idx == `NUM_LINE_BUFFERS-1))
+                if ((vcnt_1x == 23) || (line_idx == `NUM_LINE_BUFFERS-1))
                     line_idx <= 0;
                 else
                     line_idx <= line_idx + 1'b1;
@@ -260,7 +260,7 @@ begin
             V_SCANLINEMODE <= x_info[1:0];
             X_SCANLINESTR <= ((x_info[5:2]+8'h01)<<4)-1'b1;
             V_SCANLINEID <= x_info[10:6];
-            X_MASK_BR <= 0;
+            X_MASK_BR <= 4'h0;
         end
             
         R_in_L <= R_in;

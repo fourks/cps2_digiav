@@ -36,6 +36,7 @@ module syncgen (
     output reg [10:0] vcnt, //max. 2048
     output reg [8:0] hcnt_lbuf,
     output reg [5:0] vcnt_lbuf,
+    output reg mask_enable,
     output reg [2:0] h_ctr,
     output reg [2:0] v_ctr
 );
@@ -56,8 +57,8 @@ parameter h_mult_std = 4;
 parameter h_mult_wide = 4;
 parameter v_ctr_max = 4;
 
-reg [3:0] V_STARTPOS;
-reg [5:0] V_REFOFFSET;
+reg [3:0] V_OFFSET;
+reg [10:0] V_INITLINE;
 
 reg prev_hs, prev_vs;
 reg v_leadedge, v_leadedge_synced;
@@ -66,8 +67,11 @@ reg [7:0] V_gen;
 reg frameid;
 
 reg [8:0] h_active_src;
+reg [10:0] h_width_dst;
 reg [2:0] h_mult;
 reg [8:0] h_padding;
+
+wire [8:0] hcnt_lbuf_resetpos = (aspect == `CPS3_ASP_STD) ? 0 : 8;
 
 // HSYNC gen (negative polarity)
 always @(posedge PCLK or negedge reset_n)
@@ -88,20 +92,21 @@ begin
             v_leadedge <= 0;
             v_leadedge_synced <= 1;
             hcnt <= 0;
-            h_ctr <= h_mult-1;
-            hcnt_lbuf <= -1;
+            h_ctr <= 0;
+            hcnt_lbuf <= hcnt_lbuf_resetpos;
         end else if (hcnt < H_TOTAL-1) begin
             hcnt <= hcnt + 1;
             if (hcnt >= X_START + H_ACTIVE - h_padding) begin
-                hcnt_lbuf <= -1;
+                mask_enable <= 1'b1;
             end else if (hcnt >= X_START + h_padding) begin
                 h_ctr <= (h_ctr == h_mult-1) ? 0 : (h_ctr + 1'b1);
                 hcnt_lbuf <= (h_ctr == h_mult-1) ? (hcnt_lbuf + 1'b1) : hcnt_lbuf;
+                mask_enable <= 1'b0;
             end
         end else begin
             hcnt <= 0;
-            h_ctr <= h_mult-1;
-            hcnt_lbuf <= -1;
+            h_ctr <= 0;
+            hcnt_lbuf <= hcnt_lbuf_resetpos;
         end
         
         // Hsync signal
@@ -120,7 +125,7 @@ begin
         VSYNC_out <= 0;
     end else begin
         if (v_leadedge == 1'b1) begin
-            vcnt <= 1054-V_REFOFFSET;
+            vcnt <= V_INITLINE;
         end else if (hcnt == H_TOTAL-1) begin
             // Vsync counter
             if (vcnt < V_TOTAL-1 )
@@ -129,7 +134,7 @@ begin
                 vcnt <= 0;
             
             if (vcnt == Y_START-1) begin
-                vcnt_lbuf <= V_STARTPOS;
+                vcnt_lbuf <= V_OFFSET;
                 v_ctr <= 0;
             end else if (v_ctr == v_ctr_max) begin
                 if (vcnt_lbuf < `NUM_LINE_BUFFERS-1)
@@ -151,11 +156,12 @@ end
 // Read config
 always @(posedge PCLK) begin
     if (VSYNC_ref == 1'b0) begin
-        V_STARTPOS <= v_info[3:0];
-        V_REFOFFSET <= v_info[9:4];
+        V_OFFSET <= v_info[3:0];
+        V_INITLINE <= v_info[14:4];
         h_mult <= (aspect == `CPS3_ASP_WIDE) ? h_mult_wide : h_mult_std;
         h_active_src <= (aspect == `CPS3_ASP_WIDE) ? `CPS3_H_ACTIVE_WIDE : `CPS3_H_ACTIVE_STD;
-        h_padding <= (H_ACTIVE-(h_mult*h_active_src))/2;
+        h_width_dst <= h_mult*h_active_src;
+        h_padding <= (h_width_dst <= H_ACTIVE) ? ((H_ACTIVE-h_width_dst)/2) : 0;
     end
 end
 
