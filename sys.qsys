@@ -57,14 +57,6 @@
          type = "int";
       }
    }
-   element nios2_gen2_0.debug_mem_slave
-   {
-      datum baseAddress
-      {
-         value = "34816";
-         type = "String";
-      }
-   }
    element onchip_memory2_0
    {
       datum _sortIndex
@@ -194,7 +186,7 @@
    dir="end" />
  <interface name="reset" internal="clk_0.clk_in_reset" type="reset" dir="end" />
  <module name="clk_0" kind="clock_source" version="17.1" enabled="1">
-  <parameter name="clockFrequency" value="25000000" />
+  <parameter name="clockFrequency" value="10740000" />
   <parameter name="clockFrequencyKnown" value="true" />
   <parameter name="inputClockFrequency" value="0" />
   <parameter name="resetSynchronousEdges" value="NONE" />
@@ -211,7 +203,7 @@
    enabled="1">
   <parameter name="allowMultipleConnections" value="false" />
   <parameter name="avalonSpec" value="2.0" />
-  <parameter name="clkFreq" value="25000000" />
+  <parameter name="clkFreq" value="10740000" />
   <parameter name="hubInstanceID" value="0" />
   <parameter name="readBufferDepth" value="32" />
   <parameter name="readIRQThreshold" value="8" />
@@ -234,9 +226,9 @@
   <parameter name="AUTO_DEVICE_SPEEDGRADE" value="8" />
   <parameter name="bht_ramBlockType" value="Automatic" />
   <parameter name="breakOffset" value="32" />
-  <parameter name="breakSlave" value="None" />
+  <parameter name="breakSlave" value="onchip_memory2_0.s1" />
   <parameter name="cdx_enabled" value="false" />
-  <parameter name="clockFrequency" value="25000000" />
+  <parameter name="clockFrequency" value="10740000" />
   <parameter name="cpuArchRev" value="1" />
   <parameter name="cpuID" value="0" />
   <parameter name="cpuReset" value="false" />
@@ -247,7 +239,7 @@
   <parameter name="dataAddrWidth" value="16" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x4000' end='0x8000' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x8800' end='0x9000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='i2c_opencores_0.avalon_slave_0' start='0x9000' end='0x9020' type='i2c_opencores.avalon_slave_0' /><slave name='pio_3.s1' start='0x9020' end='0x9030' type='altera_avalon_pio.s1' /><slave name='pio_2.s1' start='0x9030' end='0x9040' type='altera_avalon_pio.s1' /><slave name='pio_1.s1' start='0x9040' end='0x9050' type='altera_avalon_pio.s1' /><slave name='pio_0.s1' start='0x9050' end='0x9060' type='altera_avalon_pio.s1' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x9060' end='0x9068' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x4000' end='0x8000' type='altera_avalon_onchip_memory2.s1' /><slave name='i2c_opencores_0.avalon_slave_0' start='0x9000' end='0x9020' type='i2c_opencores.avalon_slave_0' /><slave name='pio_3.s1' start='0x9020' end='0x9030' type='altera_avalon_pio.s1' /><slave name='pio_2.s1' start='0x9030' end='0x9040' type='altera_avalon_pio.s1' /><slave name='pio_1.s1' start='0x9040' end='0x9050' type='altera_avalon_pio.s1' /><slave name='pio_0.s1' start='0x9050' end='0x9060' type='altera_avalon_pio.s1' /><slave name='jtag_uart_0.avalon_jtag_slave' start='0x9060' end='0x9068' type='altera_avalon_jtag_uart.avalon_jtag_slave' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -262,7 +254,7 @@
   <parameter name="debug_assignJtagInstanceID" value="false" />
   <parameter name="debug_datatrigger" value="0" />
   <parameter name="debug_debugReqSignals" value="false" />
-  <parameter name="debug_enabled" value="true" />
+  <parameter name="debug_enabled" value="false" />
   <parameter name="debug_hwbreakpoint" value="0" />
   <parameter name="debug_jtagInstanceID" value="0" />
   <parameter name="debug_traceStorage" value="onchip_trace" />
@@ -285,8 +277,8 @@
   <parameter name="icache_size" value="4096" />
   <parameter name="icache_tagramBlockType" value="Automatic" />
   <parameter name="impl" value="Tiny" />
-  <parameter name="instAddrWidth" value="16" />
-  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x4000' end='0x8000' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x8800' end='0x9000' type='altera_nios2_gen2.debug_mem_slave' /></address-map>]]></parameter>
+  <parameter name="instAddrWidth" value="15" />
+  <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory2_0.s1' start='0x4000' end='0x8000' type='altera_avalon_onchip_memory2.s1' /></address-map>]]></parameter>
   <parameter name="instructionMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="instructionMasterHighPerformanceMapParam" value="" />
   <parameter name="instruction_master_high_performance_paddr_base" value="0" />
@@ -441,7 +433,7 @@
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
-  <parameter name="clockRate" value="25000000" />
+  <parameter name="clockRate" value="10740000" />
   <parameter name="direction" value="Input" />
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
@@ -455,7 +447,7 @@
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
-  <parameter name="clockRate" value="25000000" />
+  <parameter name="clockRate" value="10740000" />
   <parameter name="direction" value="Output" />
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
@@ -469,7 +461,7 @@
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
-  <parameter name="clockRate" value="25000000" />
+  <parameter name="clockRate" value="10740000" />
   <parameter name="direction" value="Output" />
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
@@ -483,7 +475,7 @@
   <parameter name="bitClearingEdgeCapReg" value="false" />
   <parameter name="bitModifyingOutReg" value="false" />
   <parameter name="captureEdge" value="false" />
-  <parameter name="clockRate" value="25000000" />
+  <parameter name="clockRate" value="10740000" />
   <parameter name="direction" value="Output" />
   <parameter name="edgeType" value="RISING" />
   <parameter name="generateIRQ" value="false" />
@@ -509,15 +501,6 @@
    end="i2c_opencores_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x9000" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="17.1"
-   start="nios2_gen2_0.data_master"
-   end="nios2_gen2_0.debug_mem_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x8800" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -563,15 +546,6 @@
    end="pio_3.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x9020" />
-  <parameter name="defaultConnection" value="false" />
- </connection>
- <connection
-   kind="avalon"
-   version="17.1"
-   start="nios2_gen2_0.instruction_master"
-   end="nios2_gen2_0.debug_mem_slave">
-  <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x8800" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection

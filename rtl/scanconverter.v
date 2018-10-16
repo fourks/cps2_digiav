@@ -17,6 +17,8 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
+`include "cps3_defines.v"
+
 `define TRUE                    1'b1
 `define FALSE                   1'b0
 `define HI                      1'b1
@@ -31,11 +33,6 @@
 
 `define HSYNC_LEADING_EDGE      ((HSYNC_in_L == `HI) & (HSYNC_in == `LO))
 `define VSYNC_LEADING_EDGE      ((VSYNC_in_L == `HI) & (VSYNC_in == `LO))
-
-`define EXT_H_AVIDSTART         144
-
-`define CPS2_H_AVIDSTART        120
-`define CPS2_H_ACTIVE           384
 
 `define NUM_LINE_BUFFERS        40
 
@@ -54,6 +51,8 @@ module scanconverter (
     input [5:0] vcnt_ext_lbuf,
     input [2:0] hctr_ext,
     input [2:0] vctr_ext,
+    output reg aspect,
+    output reg v_change,
     input HSYNC_ext,
     input VSYNC_ext,
     input DE_ext,
@@ -90,14 +89,17 @@ reg frame_change, line_change;
 reg [11:0] hcnt_1x;
 reg [10:0] vcnt_1x;
 
+//active/total status regs
+reg [8:0] h_active;
+reg [6:0] h_avidstart;
+
 //other counters
 wire [2:0] line_id_act, col_id_act;
 reg [2:0] line_id_pp1, line_id_pp2, line_id_pp3, col_id_pp1, col_id_pp2, col_id_pp3;
-reg [11:0] hmax[0:1];
-reg [10:0] vmax;
 reg [5:0] line_idx;
 reg [1:0] line_out_idx_2x, line_out_idx_3x, line_out_idx_4x;
 reg [2:0] line_out_idx_5x;
+reg [10:0] vmax;
 reg [23:0] warn_h_unstable, warn_pll_lock_lost, warn_pll_lock_lost_3x;
 reg mask_enable_pp1, mask_enable_pp2, mask_enable_pp3, mask_enable_pp4;
 
@@ -143,18 +145,19 @@ function [7:0] apply_mask;
 //
 //Non-critical signals and inactive clock combinations filtered out in SDC
 always @(*) begin
-        R_act = R_lbuf;
-        G_act = G_lbuf;
-        B_act = B_lbuf;
-        HSYNC_act = HSYNC_ext;
-        VSYNC_act = VSYNC_ext;
-        DE_act = DE_ext;
-        line_id_act = vctr_ext;
-        col_id_act = hctr_ext;
+    R_act = R_lbuf;
+    G_act = G_lbuf;
+    B_act = B_lbuf;
+    HSYNC_act = HSYNC_ext;
+    VSYNC_act = VSYNC_ext;
+    DE_act = DE_ext;
+    line_id_act = vctr_ext;
+    col_id_act = hctr_ext;
 end
 
-wire [9:0] linebuf_wraddr = hcnt_1x-`CPS2_H_AVIDSTART;
 
+wire [9:0] linebuf_wraddr = hcnt_1x - h_avidstart;
+wire wren = (linebuf_wraddr < h_active);
 wire q_unconn;
 
 linebuf linebuf_rgb (
@@ -163,7 +166,7 @@ linebuf linebuf_rgb (
     .rdclock ( PCLK_out ),
     .wraddress( {line_idx, linebuf_wraddr[8:0]} ),
     .wrclock ( PCLK_in ),
-    .wren ( linebuf_wraddr < `CPS2_H_ACTIVE ),
+    .wren ( wren ),
     .q ( {q_unconn, R_lbuf, G_lbuf, B_lbuf} )
 );
 
@@ -218,6 +221,7 @@ begin
         vcnt_1x <= 0;
         line_idx <= 0;
         frame_change <= 1'b0;
+        aspect <= 0;
     end else begin
         if (`HSYNC_LEADING_EDGE) begin
             hcnt_1x <= 0;
@@ -229,6 +233,17 @@ begin
             if ((VSYNC_in == `LO) & (vcnt_1x > 100)) begin
                 vcnt_1x <= 0;
                 frame_change <= 1'b1;
+                vmax <= vcnt_1x;
+                v_change <= (vcnt_1x == vmax) ? 1'b0 : 1'b1;
+                if (hcnt_1x == `CPS3_H_TOTAL_STD-1) begin
+                    aspect <= `CPS3_ASP_STD;
+                    h_active <= `CPS3_H_ACTIVE_STD;
+                    h_avidstart <= `CPS3_H_AVIDSTART_STD;
+                end else if (hcnt_1x == `CPS3_H_TOTAL_WIDE-1) begin
+                    aspect <= `CPS3_ASP_WIDE;
+                    h_active <= `CPS3_H_ACTIVE_WIDE;
+                    h_avidstart <= `CPS3_H_AVIDSTART_WIDE;
+                end
             end else begin
                 vcnt_1x <= vcnt_1x + 1'b1;
                 

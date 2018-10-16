@@ -28,7 +28,6 @@
 #include "si5351_regs.h"
 
 
-#define LO_MASK             0x000007ff
 #define PB_MASK             (3<<30)
 #define PB0_BIT             (1<<30)
 #define PB1_BIT             (1<<31)
@@ -107,7 +106,11 @@ void init_adv() {
     adv7513_writereg(0xE0, 0xD0);
     adv7513_writereg(0xF9, 0x00);
 
-    adv7513_writereg(0x15, 0xA0);
+    adv7513_writereg(0x12, 0x20);
+    adv7513_writereg(0x13, 0x20);
+    adv7513_writereg(0x14, 0x0B);
+    adv7513_writereg(0x15, 0x20);
+
     adv7513_writereg(0x16, 0x00);
 
     adv7513_writereg(0xAF, 0x06);
@@ -115,10 +118,10 @@ void init_adv() {
     adv7513_writereg(0xBA, 0x60);
 
     adv7513_writereg(0x01, 0x00);
-    adv7513_writereg(0x02, 0x30);
+    adv7513_writereg(0x02, 0x18);
     adv7513_writereg(0x03, 0x00);
     adv7513_writereg(0x0A, 0x00);
-    adv7513_writereg(0x0C, 0x84);
+    adv7513_writereg(0x0C, 0x04);
 
     adv7513_writereg(0x4A, 0xC0);
     adv7513_writereg(0x55, 0x02);

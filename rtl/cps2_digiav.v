@@ -23,7 +23,7 @@ module cps2_digiav(
     input [4:0] B_in,
     input VSYNC_in,
     input HSYNC_in,
-    input PCLK2x_in,
+    input PCLK_in,
     input MCLK_SI,
     input PCLK_SI,
     input I2S_BCK,
@@ -67,9 +67,8 @@ wire VSYNC_out;
 wire PCLK_out;
 wire DE_out;
 
-wire clk25, pclk_5x;
-
-wire [7:0] clkcnt_out;
+wire aspect;
+wire v_change;
 
 wire [11:0] hcnt_sg;
 wire [10:0] vcnt_sg;
@@ -83,7 +82,7 @@ wire BTN_volplus_debounced;
 
 
 // Latch inputs syncronized to PCLKx2_in (negedge)
-always @(posedge PCLK2x_in or negedge reset_n)
+always @(posedge PCLK_in or negedge reset_n)
 begin
     if (!reset_n) begin
         R_in_L <= 5'h00;
@@ -100,7 +99,7 @@ begin
     end
 end
 
-always @(clk25) begin
+always @(PCLK_in) begin
     if (reset_n_ctr == 4'hf)
         reset_n <= 1'b1;
     else
@@ -121,7 +120,7 @@ assign HDMI_TX_GD = G_out;
 assign HDMI_TX_BD = B_out;
 
 always @(posedge PCLK_SI) begin
-    sg_reset_n_L <= x_info[31];
+    sg_reset_n_L <= x_info[31] & ~v_change;
     sg_reset_n_LL <= sg_reset_n_L;
     sg_hsync_ref_L <= HSYNC_in_L;
     sg_hsync_ref_LL <= sg_hsync_ref_L;
@@ -130,7 +129,7 @@ always @(posedge PCLK_SI) begin
 end
 
 sys sys_inst(
-    .clk_clk                            (clk25),
+    .clk_clk                            (PCLK_in),
     .reset_reset_n                      (reset_n),
     .pio_0_ctrl_in_export               ({BTN_volminus_debounced, BTN_volplus_debounced, 30'h0}),
     .pio_1_h_info_out_export            (h_info),
@@ -141,7 +140,7 @@ sys sys_inst(
 );
 
 scanconverter scanconverter_inst (
-    .PCLK_in        (PCLK2x_in),
+    .PCLK_in        (PCLK_in),
     .PCLK_ext       (PCLK_SI),
     .reset_n        (reset_n),
     .R_in           (R_in_L),
@@ -155,6 +154,8 @@ scanconverter scanconverter_inst (
     .vcnt_ext_lbuf  (vcnt_sg_lbuf),
     .hctr_ext       (hctr_sg),
     .vctr_ext       (vctr_sg),
+    .aspect         (aspect),
+    .v_change       (v_change),
     .HSYNC_ext      (HSYNC_sg),
     .VSYNC_ext      (VSYNC_sg),
     .DE_ext         (DE_sg),
@@ -168,13 +169,6 @@ scanconverter scanconverter_inst (
     .DE_out         (DE_out)
 );
 
-pll_pclk pll_pclk_inst (
-    .inclk0 ( PCLK2x_in ),
-    .c0 ( clk25 ),
-    .c1 ( pclk_5x ),
-    .locked ( )
-);
-
 syncgen u_sg (
     .PCLK           (PCLK_SI),
     .reset_n        (sg_reset_n_LL),
@@ -182,6 +176,7 @@ syncgen u_sg (
     .VSYNC_ref      (sg_vsync_ref_LL),
     .h_info         (h_info),
     .v_info         (v_info),
+    .aspect         (aspect),
     .HSYNC_out      (HSYNC_sg),
     .VSYNC_out      (VSYNC_sg),
     .DE_out         (DE_sg),
