@@ -1,29 +1,37 @@
-CPS2 digital AV interface (Rev 2)
+CPS2 digital AV interface (Rev 2 - CPS3 branch)
 ==============
 
-Overview
+Features (current)
 --------------------------
-cps2_digiav is an add-on for Capcom CP System II arcade board which enables digital video and audio output via HDMI connector. The project consists of an interface PCB and FPGA firmware.
+* framelocked 1080p@59.6Hz output with max. 40 scanline latency
+* 24bit/48kHz audio output
+* supports CPS3 standard and widescreen modes
 
-Features (Rev 1)
+TODO
 --------------------------
-See [rev1](tree/rev1) branch
-
-Features (Rev 2)
---------------------------
-TBA
+* OSD/UI
+* resolution select
+* more scanline options
+* audio ASRC on FPGA
+* settings store / profiles
 
 Installation
 --------------------------
-The add-on board can be installed inside (preferred method) or outside of CPS2 A-board. Signal hookup points are listed in pcb/pcb_v1.0/doc/cps2_hookup_points.txt . After installation, FPGA firmware must be uploaded via JTAG using Altera USB Blaster -compatible programmer.
+The add-on board can be installed on top of CPS3 board, preferably close to JAMMA connector. The following additional parts are required:
+* SRC4190 IC (until audio ASRC on FPGA is implemented)
+* 2pcs 0603 10k SMD resistors and TL2243 switch (or 2 external buttons connecting "vol+" and "vol-" pads to GND when pressed)
+* ribbon cable (~15cm, at least 5x4=20 conductors)
+* coaxial cable (~50cm total)
+* kynar wire (~50cm total)
+
+Signal hookup points are listed in pcb/doc/cps3_hookup_points.txt and instructions are in pcb/doc/install.md .
 
 Usage
 --------------------------
-Resolution switch and scanline enabling are implemented via CPS2 volume buttons on the side (which do not affect digital volume level):
-* VOL-: switch output resolution
-* VOL+: enable/disable scanlines
+Board is controlled via TL2243 (or via 2 external buttons depending on installation):
+* Upper button (VOL-): change vertical offset (0-8, default=4)
+* Lower button (VOL+): enable/disable scanlines
 
 More info and discussion
 --------------------------
 * [Forum topic](http://shmups.system11.org/viewtopic.php?f=6&t=59479&p=1266977)
-* [Pre-built firmware](https://www.niksula.hut.fi/~mhiienka/cps2_digiav/fw/)
