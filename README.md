@@ -3,7 +3,7 @@ CPS2 digital AV interface (Rev 2 - CPS3 branch)
 
 Features (current)
 --------------------------
-* framelocked 1080p@59.6Hz output with max. 40 scanline latency
+* framelocked 1080p@59.60Hz output with max. 40 scanline latency
 * 24bit/48kHz audio output
 * supports CPS3 standard and widescreen modes
 
@@ -12,13 +12,11 @@ TODO
 * OSD/UI
 * resolution select
 * more scanline options
-* audio ASRC on FPGA
 * settings store / profiles
 
 Installation
 --------------------------
 The add-on board can be installed on top of CPS3 board, preferably close to JAMMA connector. The following additional parts are required:
-* SRC4190 IC (until audio ASRC on FPGA is implemented)
 * 2pcs 0603 10k SMD resistors and TL2243 switch (or 2 external buttons connecting "vol+" and "vol-" pads to GND when pressed)
 * ribbon cable (~15cm, at least 5x4=20 conductors)
 * coaxial cable (~50cm total)

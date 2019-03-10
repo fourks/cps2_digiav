@@ -77,6 +77,8 @@ wire [5:0] vcnt_sg_lbuf;
 wire [2:0] hctr_sg, vctr_sg;
 wire HSYNC_sg, VSYNC_sg, DE_sg, mask_enable_sg;
 
+wire I2S_BCK_o, I2S_DATA_o, I2S_WS_o; 
+
 wire BTN_volminus_debounced;
 wire BTN_volplus_debounced;
 
@@ -99,7 +101,7 @@ begin
     end
 end
 
-always @(PCLK_in) begin
+always @(posedge PCLK_in) begin
     if (reset_n_ctr == 4'hf)
         reset_n <= 1'b1;
     else
@@ -111,10 +113,10 @@ assign HDMI_TX_DE = DE_out;
 assign HDMI_TX_PCLK = PCLK_out;
 assign HDMI_TX_HS = HSYNC_out;
 assign HDMI_TX_VS = VSYNC_out;
-assign HDMI_TX_I2S_DATA = I2S_DATA;
-assign HDMI_TX_I2S_BCK = I2S_BCK;
+assign HDMI_TX_I2S_DATA = I2S_DATA_o;
+assign HDMI_TX_I2S_BCK = I2S_BCK_o;
 //CPS3 audio channels are reversed
-assign HDMI_TX_I2S_WS = ~I2S_WS;
+assign HDMI_TX_I2S_WS = ~I2S_WS_o;
 //assign HDMI_TX_I2S_MCLK = 0;
 assign HDMI_TX_RD = R_out;
 assign HDMI_TX_GD = G_out;
@@ -189,6 +191,17 @@ syncgen u_sg (
     .mask_enable    (mask_enable_sg),
     .h_ctr          (hctr_sg),
     .v_ctr          (vctr_sg),
+);
+
+i2s_upsampler_asrc upsampler0 (
+    .AMCLK_i        (MCLK_SI),
+    .nARST          (reset_n),
+    .ASCLK_i        (I2S_BCK),
+    .ASDATA_i       (I2S_DATA),
+    .ALRCLK_i       (I2S_WS),
+    .ASCLK_o        (I2S_BCK_o),
+    .ASDATA_o       (I2S_DATA_o),
+    .ALRCLK_o       (I2S_WS_o)
 );
 
 btn_debounce #(.MIN_PULSE_WIDTH(25000)) deb0 (

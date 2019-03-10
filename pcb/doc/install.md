@@ -16,7 +16,7 @@ RGB, audio and power are easily available on top side of CPS3. Extract RGB and a
 Step 3: Preparation of cps2_digiav board
 --------------------------
 
-Solder U11 (SRC4190), SW1 (TL2243) and R7+R8 (2x10k 0603 SMD resistors) on cps2_digiav board.
+Bridge SMD jumpers J3, J5 and J6 on top side of the PCB, and solder R7+R8 (2x10k 0603 SMD resistors). If you want to add on-board button module for operation control, solder SW1 (TL2243). For external buttons (2pcs), connect their one end to GND and other end to btn_vol+/- pad.
 
 
 Step 4: RGB hookup to cps2_digiav board
