@@ -1,36 +1,39 @@
-Step 1: clock and sync signals
+A-board (revision 89626A-4) signal reference
 --------------------------
-Clock is available on bottom side of A-board. Extract 16MHz clock (C1) below the oscillator as shown in the image below. It's mandatory to use a coax cable to avoid stability issues caused by noise. Horizontal and vertical sync signals can be extracted from 7S - PAL (BGSA5) as described in cps2_hookup_points.txt.
+[List of hookup points](./cps1_hookup_points.txt)
+
+![](cps1_hookup_points.jpg)
+
+
+Step 1: Preparation
+--------------------------
+
+Solder 3pcs U-shaped 2x5 headers M5M RAM chips as shown in the image below. Solder BCS-105-L-D-PE-BE sockets on cps1_adapter (J1-3) and trim down pin metals underside the PCB. Make sure the adapter PCB fits in place before going forward. Solder R7+R8 (2x10k 0603 SMD resistors) on bottom of cps2_digiav board. Install cps2_digiav on top of adapter board via 4pcs 5-pin headers.
 
 ![](install-1.jpg)
 
+**NOTE:** If you plan using full-length B-board with the modified A-board, the spacers between cps1_adapter and cps2_digiav boards must be removed to prevent JTAG connector touching the B-board after installation. It is also recommened to cover cps1_adapter vias from the overlapping area by electrical tape as well as the JTAG connector.
 
-Step 2: RGB, audio, power and button signals
+
+Step 2: Clock and sync signals
 --------------------------
 
-2pcs U-shaped 2x5 headers are used to tap RGB signals from M5M RAM chips as shown in the image below. Audio is extracted from 10J - TDA1543 as described in cps2_hookup_points.txt and power can be easily taken e.g. from empty CCX cap footprints. Vol- and vol+ signals are taken from respective buttons as described in the hookup document.
+Clock is available on 74F32. It's mandatory to use a coax cable to avoid stability issues caused by noise. Composite sync is extracted from R28 as shown in the signal reference image (connect to HS pin on cps2_digiav).
+
+
+Step 3: Audio, power and button signals
+--------------------------
+
+Audio is extracted from YM2151 and R49 (to be confirmed). Use coax cable for oCM and DAO signals. 5V/GND can be extracted from certain CCX caps, e.g. the one shown in the signal reference image. Wire two external pushbuttons to the board: one terminal to GND and another to vol-/vol+.
 
 ![](install-2.jpg)
 
-Step 3: Preparation of cps2_digiav board
+
+Step 4: Signals between cps1_adapter and cps2_digiav
 --------------------------
 
-Solder BCS-105-L-D-PE-BE sockets on their places and trim down pin metals underside the PCB. Bridge SMD jumpers J3, J5 and J6 on top side of the PCB.
-
-
-Step 4: Board installation
---------------------------
-
-Place the add-on board on top of the CPS2 board so that the sockets are aligned to headers. Connect all signal & power wires, and add a jumper wire between C1 and C2 pads.
+Bridge SMD jumpers J3, J5 and J6 on cps2_digiav board. Connect oC1, SH1, SO and 3v3 from cps1_adapter to cps2_digiav as defined in the hookup point list. Add a jumper wire between C1 and C2 pads.
 
 ![](install-3.jpg)
 
 
-Step 5: Finalization
---------------------------
-
-Make a small cutout for HDMI connector in the CPS2 case as illustrated below. If you want to enable later access to JTAG connector without the need of removing top part of A-board case (which also tends to lift up the add-on board), there are two options. It's possible to either replace the JTAG connector with an extension cable that goes outside of the case, or make another cutout on the A-board case on top of the connector.
-
-![](install-4.jpg)
-
-Before closing the case, FPGA firmware (output_files/cps2_digiav.jic) needs to be flashed (if board wasn't pre-flashed) via JTAG using Altera USB Blaster -compatible programmer while CPS2 is powered on.

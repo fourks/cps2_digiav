@@ -26,8 +26,8 @@ entity fir_2ch_audio_tb is
 
     constant PHYSCHANIN_c             : natural := 1;
     constant PHYSCHANOUT_c            : natural := 1;
-    constant INWIDTH_c                : natural := 16;
-    constant OUTWIDTH_c               : natural := 20;
+    constant INWIDTH_c                : natural := 17;
+    constant OUTWIDTH_c               : natural := 24;
     constant BANKINWIDTH_c            : natural := 0;
     constant BANKCOUNT_c              : natural := 1;
     constant DATA_WIDTH_c             : natural := (INWIDTH_c+BANKINWIDTH_c) * PHYSCHANIN_c;

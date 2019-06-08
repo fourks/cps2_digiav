@@ -1,5 +1,5 @@
 //
-// Copyright (C) 2016-2018  Markus Hiienkari <mhiienka@niksula.hut.fi>
+// Copyright (C) 2016-2019  Markus Hiienkari <mhiienka@niksula.hut.fi>
 //
 // This file is part of CPS2 Digital AV Interface project.
 //
@@ -17,21 +17,19 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-//`define I2S_UPSAMPLE_2X
-
 module cps2_digiav(
     input [3:0] R_in,
     input [3:0] G_in,
     input [3:0] B_in,
     input [3:0] F_in,
-    input VSYNC_in,
-    input HSYNC_in,
+    input CSYNC_in,
     input PCLK2x_in,
     input MCLK_SI,
     input PCLK_SI,
-    input I2S_BCK,
-    input I2S_WS,
-    input I2S_DATA,
+    input YM_o1,
+    input YM_SH1,
+    input YM_SO,
+    input WM_SO,
     input BTN_volminus,
     input BTN_volplus,
     inout sda,
@@ -55,7 +53,10 @@ reg reset_n = 1'b0;
 reg [3:0] reset_n_ctr;
 
 reg [3:0] R_in_L, G_in_L, B_in_L, F_in_L;
-reg HSYNC_in_L, VSYNC_in_L;
+reg CSYNC_in_L, CSYNC_in_L_prev, HSYNC, VSYNC;
+reg [9:0] hsync_ctr;
+
+reg WM_LRCLK;
 
 reg sg_reset_n_L, sg_reset_n_LL;
 reg sg_hsync_ref_L, sg_hsync_ref_LL;
@@ -97,16 +98,36 @@ begin
         G_in_L <= 4'h0;
         B_in_L <= 4'h0;
         F_in_L <= 4'h0;
-        HSYNC_in_L <= 1'b0;
-        VSYNC_in_L <= 1'b0;
+        CSYNC_in_L <= 1'b0;
     end else begin
         R_in_L <= R_in;
         G_in_L <= G_in;
         B_in_L <= B_in;
         F_in_L <= F_in;
-        HSYNC_in_L <= HSYNC_in;
-        VSYNC_in_L <= VSYNC_in;
+        CSYNC_in_L <= CSYNC_in;
     end
+end
+
+always @(posedge PCLK2x_in or negedge reset_n) begin
+    if (!reset_n) begin
+        HSYNC <= 1'b1;
+        VSYNC <= 1'b1;
+    end else begin
+        if ((CSYNC_in_L_prev == 1'b1) && (CSYNC_in_L == 1'b0))
+            hsync_ctr <= 0;
+        else
+            hsync_ctr <= hsync_ctr + 1'b1;
+
+        if (hsync_ctr == 128)
+            VSYNC <= CSYNC_in_L;
+
+        CSYNC_in_L_prev <= CSYNC_in_L;
+        HSYNC <= (hsync_ctr < 64) ? 1'b0 : 1'b1;
+    end
+end
+
+always @(negedge YM_SH1) begin
+    WM_LRCLK <= ~WM_LRCLK;
 end
 
 always @(posedge clk25) begin
@@ -132,16 +153,17 @@ assign HDMI_TX_BD = B_out;
 always @(posedge PCLK_SI) begin
     sg_reset_n_L <= x_info[31] & ~v_change;
     sg_reset_n_LL <= sg_reset_n_L;
-    sg_hsync_ref_L <= HSYNC_in_L;
+    sg_hsync_ref_L <= HSYNC;
     sg_hsync_ref_LL <= sg_hsync_ref_L;
-    sg_vsync_ref_L <= VSYNC_in_L;
+    sg_vsync_ref_L <= VSYNC;
     sg_vsync_ref_LL <= sg_vsync_ref_L;
 end
 
 sys sys_inst(
     .clk_clk                            (clk25),
     .reset_reset_n                      (reset_n),
-    .pio_0_ctrl_in_export               ({BTN_volminus_debounced, BTN_volplus_debounced, 30'h0}),
+//    .pio_0_ctrl_in_export               ({BTN_volminus_debounced, BTN_volplus_debounced, 30'h0}),
+    .pio_0_ctrl_in_export               ({1'b1, 1'b1, 30'h0}),
     .pio_1_h_info_out_export            (h_info),
     .pio_2_v_info_out_export            (v_info),
     .pio_3_x_info_out_export            (x_info),
@@ -157,8 +179,8 @@ scanconverter scanconverter_inst (
     .G_in           (G_in_L),
     .B_in           (B_in_L),
     .F_in           (F_in_L),
-    .HSYNC_in       (HSYNC_in_L),
-    .VSYNC_in       (VSYNC_in_L),
+    .HSYNC_in       (HSYNC),
+    .VSYNC_in       (VSYNC),
     .hcnt_ext       (hcnt_sg[10:0]),
     .vcnt_ext       (vcnt_sg),
     .hcnt_ext_lbuf  (hcnt_sg_lbuf),
@@ -205,29 +227,19 @@ syncgen u_sg (
     .v_ctr          (vctr_sg),
 );
 
-`ifdef I2S_UPSAMPLE_2X
-i2s_upsampler_2x upsampler0 (
-    .reset_n        (reset_n),
-    .I2S_BCK        (I2S_BCK),
-    .I2S_WS         (I2S_WS),
-    .I2S_DATA       (I2S_DATA),
-    .I2S_BCK_out    (I2S_BCK_out),
-    .I2S_WS_out     (I2S_WS_2x),
-    .I2S_DATA_out   (I2S_DATA_2x),
-    .clkcnt_out     (clkcnt_out)
-);
-`else
 i2s_upsampler_asrc upsampler0 (
     .AMCLK_i        (MCLK_SI),
     .nARST          (reset_n),
-    .ASCLK_i        (I2S_BCK),
-    .ASDATA_i       (I2S_DATA),
-    .ALRCLK_i       (I2S_WS),
+    .ASCLK_i        (YM_o1),
+    .ASDATA_i       (YM_SO),
+    .ALRCLK_i       (YM_SH1),
+    .ASCLK_WM_i     (YM_o1),
+    .ASDATA_WM_i    (WM_SO),
+    .ALRCLK_WM_i    (WM_LRCLK),
     .ASCLK_o        (I2S_BCK_out),
     .ASDATA_o       (I2S_DATA_2x),
     .ALRCLK_o       (I2S_WS_2x)
 );
-`endif
 
 btn_debounce #(.MIN_PULSE_WIDTH(25000)) deb0 (
     .i_clk          (clk25),

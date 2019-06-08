@@ -29,10 +29,15 @@ module i2s_upsampler_asrc (
   AMCLK_i,
   nARST,
 
-  // N64 Audio Input
+  // YM2151 Audio Input
   ASCLK_i,
   ASDATA_i,
   ALRCLK_i,
+
+  // WM8782 Audio Input
+  ASCLK_WM_i,
+  ASDATA_WM_i,
+  ALRCLK_WM_i,
 
   // Audio Output
   ASCLK_o,
@@ -47,6 +52,10 @@ input ASCLK_i;
 input ASDATA_i;
 input ALRCLK_i;
 
+input ASCLK_WM_i;
+input ASDATA_WM_i;
+input ALRCLK_WM_i;
+
 output ASCLK_o;
 output ASDATA_o;
 output ALRCLK_o;
@@ -54,10 +63,10 @@ output ALRCLK_o;
 
 // parallization
 
-wire [15:0] APDATA [0:1];
+wire signed [15:0] APDATA [0:1];
 wire APDATA_VALID;
 
-i2s_rx_asrc i2s_rx_u(
+ym_rx_asrc ym_rx_u(
     .AMCLK_i(AMCLK_i),
     .reset_n(nARST),
     .I2S_BCK(ASCLK_i),
@@ -66,6 +75,20 @@ i2s_rx_asrc i2s_rx_u(
     .APDATA_LEFT_o(APDATA[1]),
     .APDATA_RIGHT_o(APDATA[0]),
     .APDATA_VALID_o(APDATA_VALID)
+);
+
+wire signed [23:0] APDATA_WM [0:1];
+wire APDATA_WM_VALID;
+
+i2s_rx_asrc #(.I2S_DATA_BITS(24)) i2s_rx_u(
+    .AMCLK_i(AMCLK_i),
+    .reset_n(nARST),
+    .I2S_BCK(ASCLK_WM_i),
+    .I2S_DATA(ASDATA_WM_i),
+    .I2S_WS(ALRCLK_WM_i),
+    .APDATA_LEFT_o(APDATA_WM[1]),
+    .APDATA_RIGHT_o(APDATA_WM[0]),
+    .APDATA_VALID_o(APDATA_WM_VALID)
 );
 
 
@@ -99,14 +122,14 @@ i2s_rx_asrc i2s_rx_u(
 `else
 
   reg [1:0] tdm = 2'b11;
-  reg [15:0] sink_data_buf_0, sink_data_buf_1, sink_data;
+  reg [16:0] sink_data_buf_0, sink_data_buf_1, sink_data;
   reg sink_valid, sink_sop, sink_eop;
 
   always @(posedge AMCLK_i) begin
     case (tdm)
       2'b00: if (APDATA_VALID) begin
-        sink_data_buf_1 <= APDATA[1];
-        sink_data_buf_0 <= APDATA[0];
+        sink_data_buf_1 <= {APDATA[1][15], APDATA[1]} + {APDATA_WM[1][23], APDATA_WM[1][23:8]};
+        sink_data_buf_0 <= {APDATA[0][15], APDATA[0]} + {APDATA_WM[0][23], APDATA_WM[0][23:8]};
         tdm <= 2'b01;
       end
       2'b01: begin
@@ -139,7 +162,7 @@ i2s_rx_asrc i2s_rx_u(
     end
   end
 
-  wire [23:0] source_data;
+  wire signed [23:0] source_data;
   wire source_valid, source_sop, source_eop, source_channel;
 
   fir_2ch_audio fir_2ch_audio_u(
@@ -163,7 +186,7 @@ i2s_rx_asrc i2s_rx_u(
 
   always @(posedge AMCLK_i) begin
     if (source_valid)
-      APDATA_INT[source_sop] <= {source_data, 4'h0};
+      APDATA_INT[source_sop] <= source_data;
 
     if (source_valid & source_eop)
       APDATA_INT_VALID <= 1'b1;

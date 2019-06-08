@@ -8,12 +8,12 @@ use work.auk_dspip_math_pkg_hpfir.all;
 
 entity fir_2ch_audio_0002_ast is
   generic (
-        INWIDTH             : integer := 16;
-        OUT_WIDTH_UNTRIMMED : integer := 30;
+        INWIDTH             : integer := 17;
+        OUT_WIDTH_UNTRIMMED : integer := 31;
         BANKINWIDTH         : integer := 0;
-        REM_LSB_BIT_g       : integer := 0;
+        REM_LSB_BIT_g       : integer := 3;
         REM_LSB_TYPE_g      : string := "trunc";
-        REM_MSB_BIT_g       : integer := 10;
+        REM_MSB_BIT_g       : integer := 4;
         REM_MSB_TYPE_g      : string := "sat";
         PHYSCHANIN          : integer := 1;
         PHYSCHANOUT         : integer := 1;
@@ -194,10 +194,10 @@ real_passthrough : if COMPLEX_CONST = 1 generate
       port (
         xIn_v                 : in std_logic_vector(0 downto 0);
         xIn_c                 : in std_logic_vector(7 downto 0);
-        xIn_0                : in std_logic_vector(16 - 1 downto 0);
+        xIn_0                : in std_logic_vector(17 - 1 downto 0);
         xOut_v               : out std_logic_vector(0 downto 0);
         xOut_c               : out std_logic_vector(7 downto 0);
-        xOut_0              : out std_logic_vector(30- 1 downto 0);
+        xOut_0              : out std_logic_vector(31- 1 downto 0);
         clk                  : in std_logic;
         areset               : in std_logic
         );
@@ -219,10 +219,10 @@ end component fir_2ch_audio_0002_rtl_core;
            port map (
             xIn_v     => data_valid_core,
             xIn_c     => "00000000",
-            xIn_0     => data_in_core((0 + 16) * 0 + 16 - 1 downto (0 + 16) * 0),
+            xIn_0     => data_in_core((0 + 17) * 0 + 17 - 1 downto (0 + 17) * 0),
             xOut_v    => core_out_valid_core,
             xOut_c    => core_out_channel_core,
-            xOut_0   => core_out_core(30* 0 + 30- 1 downto 30* 0),
+            xOut_0   => core_out_core(31* 0 + 31- 1 downto 31* 0),
             clk       => clk,
             areset    => reset_fir
         );
