@@ -1,13 +1,13 @@
 EESchema Schematic File Version 4
 LIBS:cps1_adapter-cache
-EELAYER 26 0
+EELAYER 29 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "cps2_digiav CPS1 adapter"
-Date "2019-04-21"
-Rev "1.0"
+Date "2019-07-23"
+Rev "1.1"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -784,17 +784,6 @@ Connection ~ 5700 5050
 Text Label 5800 5050 0    50   ~ 0
 VMID
 $Comp
-L Device:C_Small C9
-U 1 1 5CB86F2E
-P 8450 4550
-F 0 "C9" V 8500 4650 50  0000 C CNN
-F 1 "10u" V 8400 4650 50  0000 C CNN
-F 2 "custom_components:SM0603_Capa_libcms" H 8450 4550 50  0001 C CNN
-F 3 "~" H 8450 4550 50  0001 C CNN
-	1    8450 4550
-	0    1    1    0   
-$EndComp
-$Comp
 L Device:C_Small C8
 U 1 1 5CB891BD
 P 8450 4250
@@ -808,80 +797,18 @@ $EndComp
 $Comp
 L Device:R_Small R4
 U 1 1 5CB8B5A9
-P 7750 4450
-F 0 "R4" V 7700 4600 50  0000 C CNN
-F 1 "3.3k" V 7750 4450 39  0000 C CNN
-F 2 "custom_components:SM0603_Resistor_libcms" H 7750 4450 50  0001 C CNN
-F 3 "~" H 7750 4450 50  0001 C CNN
-	1    7750 4450
+P 8250 4450
+F 0 "R4" V 8200 4600 50  0000 C CNN
+F 1 "1M" V 8250 4450 39  0000 C CNN
+F 2 "custom_components:SM0603_Resistor_libcms" H 8250 4450 50  0001 C CNN
+F 3 "~" H 8250 4450 50  0001 C CNN
+	1    8250 4450
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	7850 4450 8300 4450
-Text Label 8050 4450 0    50   ~ 0
+	8350 4450 8800 4450
+Text Label 8550 4450 0    50   ~ 0
 VMID
-$Comp
-L Device:R_Small R5
-U 1 1 5CB8EB1B
-P 7750 4650
-F 0 "R5" V 7700 4800 50  0000 C CNN
-F 1 "5k" V 7750 4650 39  0000 C CNN
-F 2 "custom_components:SM0603_Resistor_libcms" H 7750 4650 50  0001 C CNN
-F 3 "~" H 7750 4650 50  0001 C CNN
-	1    7750 4650
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	7650 4550 8000 4550
-Wire Wire Line
-	8000 4550 8000 4650
-Wire Wire Line
-	8000 4650 7850 4650
-$Comp
-L Device:R_Small R7
-U 1 1 5CB95F71
-P 8100 4550
-F 0 "R7" V 8050 4700 50  0000 C CNN
-F 1 "10k" V 8100 4550 39  0000 C CNN
-F 2 "custom_components:SM0603_Resistor_libcms" H 8100 4550 50  0001 C CNN
-F 3 "~" H 8100 4550 50  0001 C CNN
-	1    8100 4550
-	0    1    1    0   
-$EndComp
-Connection ~ 8000 4550
-$Comp
-L Device:R_Small R3
-U 1 1 5CB96146
-P 7750 4350
-F 0 "R3" V 7700 4500 50  0000 C CNN
-F 1 "5k" V 7750 4350 39  0000 C CNN
-F 2 "custom_components:SM0603_Resistor_libcms" H 7750 4350 50  0001 C CNN
-F 3 "~" H 7750 4350 50  0001 C CNN
-	1    7750 4350
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	7650 4250 8000 4250
-Wire Wire Line
-	8000 4250 8000 4350
-Wire Wire Line
-	8000 4350 7850 4350
-$Comp
-L Device:R_Small R6
-U 1 1 5CB96150
-P 8100 4250
-F 0 "R6" V 8050 4400 50  0000 C CNN
-F 1 "10k" V 8100 4250 39  0000 C CNN
-F 2 "custom_components:SM0603_Resistor_libcms" H 8100 4250 50  0001 C CNN
-F 3 "~" H 8100 4250 50  0001 C CNN
-	1    8100 4250
-	0    1    1    0   
-$EndComp
-Connection ~ 8000 4250
-Wire Wire Line
-	8350 4550 8200 4550
-Wire Wire Line
-	8350 4250 8200 4250
 $Comp
 L Connector:TestPoint TP3
 U 1 1 5CB9FE06
@@ -897,10 +824,6 @@ Wire Wire Line
 	3450 3050 3050 3050
 Text Label 8650 4250 0    50   ~ 0
 DAO
-Wire Wire Line
-	8550 4550 8800 4550
-Wire Wire Line
-	8800 4550 8800 4250
 Wire Wire Line
 	8550 4250 8800 4250
 $Comp
@@ -1002,4 +925,25 @@ F 3 "~" H 3050 3050 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 Connection ~ 3050 3050
+Wire Wire Line
+	7650 4250 7750 4250
+Wire Wire Line
+	7750 4250 7750 4350
+Wire Wire Line
+	7750 4350 7650 4350
+Wire Wire Line
+	7650 4550 7750 4550
+Wire Wire Line
+	7750 4550 7750 4650
+Wire Wire Line
+	7750 4650 7650 4650
+Wire Wire Line
+	7950 4250 7950 4450
+Wire Wire Line
+	7950 4450 7650 4450
+Wire Wire Line
+	7950 4250 8350 4250
+Wire Wire Line
+	7950 4450 8150 4450
+Connection ~ 7950 4450
 $EndSCHEMATC
