@@ -115,8 +115,7 @@ assign HDMI_TX_HS = HSYNC_out;
 assign HDMI_TX_VS = VSYNC_out;
 assign HDMI_TX_I2S_DATA = I2S_DATA_o;
 assign HDMI_TX_I2S_BCK = I2S_BCK_o;
-//CPS3 audio channels are reversed
-assign HDMI_TX_I2S_WS = ~I2S_WS_o;
+assign HDMI_TX_I2S_WS = I2S_WS_o;
 //assign HDMI_TX_I2S_MCLK = 0;
 assign HDMI_TX_RD = R_out;
 assign HDMI_TX_GD = G_out;
