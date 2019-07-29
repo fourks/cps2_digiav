@@ -162,8 +162,7 @@ end
 sys sys_inst(
     .clk_clk                            (clk25),
     .reset_reset_n                      (reset_n),
-//    .pio_0_ctrl_in_export               ({BTN_volminus_debounced, BTN_volplus_debounced, 30'h0}),
-    .pio_0_ctrl_in_export               ({1'b1, 1'b1, 30'h0}),
+    .pio_0_ctrl_in_export               ({BTN_volminus_debounced, BTN_volplus_debounced, 30'h0}),
     .pio_1_h_info_out_export            (h_info),
     .pio_2_v_info_out_export            (v_info),
     .pio_3_x_info_out_export            (x_info),
