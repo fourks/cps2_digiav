@@ -6,8 +6,8 @@ $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 1
 Title "cps2_digiav CPS1 adapter"
-Date "2019-07-23"
-Rev "1.1"
+Date "2019-07-31"
+Rev "1.2"
 Comp ""
 Comment1 ""
 Comment2 ""
@@ -322,28 +322,6 @@ F 1 "GND" V 3050 4500 50  0000 C CNN
 F 2 "custom_components:SMD_PAD" H 3250 4200 50  0001 C CNN
 F 3 "~" H 3250 4200 50  0001 C CNN
 	1    3050 4200
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Connector:TestPoint TP5
-U 1 1 5CB54BD0
-P 3050 3450
-F 0 "TP5" V 3245 3524 50  0001 C CNN
-F 1 "GND" V 3050 3750 50  0000 C CNN
-F 2 "custom_components:SMD_PAD" H 3250 3450 50  0001 C CNN
-F 3 "~" H 3250 3450 50  0001 C CNN
-	1    3050 3450
-	0    -1   -1   0   
-$EndComp
-$Comp
-L power:GND #PWR0105
-U 1 1 5CB54BE9
-P 3050 3450
-F 0 "#PWR0105" H 3050 3200 50  0001 C CNN
-F 1 "GND" H 3055 3277 50  0001 C CNN
-F 2 "" H 3050 3450 50  0001 C CNN
-F 3 "" H 3050 3450 50  0001 C CNN
-	1    3050 3450
 	0    -1   -1   0   
 $EndComp
 $Comp
