@@ -8,11 +8,9 @@ A-board (revision 89626A-4) signal reference
 Step 1: Preparation
 --------------------------
 
-Solder 3pcs U-shaped 2x5 headers M5M RAM chips as shown in the image below. Solder BCS-105-L-D-PE-BE sockets on cps1_adapter (J1-3) and trim down pin metals underside the PCB. Make sure the adapter PCB fits in place before going forward. Solder R7+R8 (2x10k 0603 SMD resistors) on bottom of cps2_digiav board. Install cps2_digiav on top of adapter board via 4pcs 5-pin headers.
+Solder 3pcs U-shaped 2x5 headers M5M RAM chips as shown in the image below. Solder BCS-105-L-D-PE-BE sockets on cps1_adapter (J1-3) and trim down pin metals underside the PCB. Make sure the adapter PCB fits in place before going forward. Solder R7+R8 (2x10k 0603 SMD resistors) on bottom of cps2_digiav board. Install cps2_digiav on top of adapter board via 4pcs 5-pin headers without using spacers. It is recommened to cover cps2_digiav bottom side area touching PAL 10A1 IC with electrical tape as well as B-board bottom area above JTAG connector (full-length B-boards only).
 
 ![](install-1.jpg)
-
-**NOTE:** If you plan using full-length B-board with the modified A-board, the spacers between cps1_adapter and cps2_digiav boards must be removed to prevent JTAG connector touching the B-board after installation. It is also recommened to cover cps1_adapter vias from the overlapping area by electrical tape as well as the JTAG connector.
 
 
 Step 2: Clock and sync signals
@@ -24,7 +22,7 @@ Clock is available on 74F32. It's mandatory to use a coax cable to avoid stabili
 Step 3: Audio, power and button signals
 --------------------------
 
-Audio is extracted from YM2151 and R49 (to be confirmed). Use coax cable for oCM and DAO signals. 5V/GND can be extracted from certain CCX caps, e.g. the one shown in the signal reference image. Wire two external pushbuttons to the board: one terminal to GND and another to vol-/vol+.
+Audio is extracted from YM2151 and R49. Use coax cable for oCM and DAO signals. 5V/GND can be extracted from certain CCX caps, e.g. the one shown in the signal reference image. Wire two external pushbuttons to the board: one terminal to GND and another to vol-/vol+.
 
 ![](install-2.jpg)
 

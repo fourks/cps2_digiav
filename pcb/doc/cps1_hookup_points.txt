@@ -15,11 +15,12 @@ pin 23: BCK
 pin 24: oCM (cps1_adapter)
 note 1: use coax cable for oCM/GND
 
-#### NOT VERIFIED YET ####
-R49 (YM3012 side): DAO (cps1_adapter)
-YM3012 pin 8: GND (cps1_adapter)
+R49:
+M6295 side: DAO (cps1_adapter)
+
+11C - YM3012:
+pin 8: GND (cps1_adapter)
 note 1: use coax cable for DAO/GND
-##########################
 
 various places, e.g. some CCX caps:
 : 5V
